@@ -6,3 +6,8 @@ metadata:
 spec:
   serviceClassName: <name>
   planName: default
+  parameters:
+    instance: <name>
+    namespace: default
+    instanceLabel: <name>
+

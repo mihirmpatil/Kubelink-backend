@@ -56,6 +56,8 @@ class ServiceCatalogClient(object):
         k8s_config = output["config"]
         curr_counter = self.get_and_update_counter()
         k8s_config["metadata"]["name"] = k8s_config["metadata"]["name"] + "-" + str(curr_counter)
+        k8s_config["spec"]["parametes"]["instance"] = k8s_config["metadata"]["name"]
+        k8s_config["spec"]["parametes"]["instanceLabel"] = k8s_config["metadata"]["name"]
         self.execute_with_stdin(json.dumps(k8s_config))
         return k8s_config["metadata"]["name"]
 

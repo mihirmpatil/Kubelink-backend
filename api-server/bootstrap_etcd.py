@@ -32,6 +32,8 @@ for item in output["items"]:
     config_dict = yaml_dict
     config_dict["metadata"]["name"] = service_name
     config_dict["spec"]["serviceClassName"] = service_name
+    config_dict["spec"]["parameters"]["instance"] = service_name
+    config_dict["spec"]["parameters"]["instanceLabel"] = service_name 
     d["config"] = config_dict
     #etcd_client.delete(key)
     etcd_client.write(key, json.dumps(d))

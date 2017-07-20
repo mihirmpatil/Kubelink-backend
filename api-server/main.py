@@ -50,7 +50,6 @@ def create_instance():
         d["accessURL"] = ""
         d["credentials"] = ""
         etcd_client.write(key, json.dumps(d))
-
         resp["status"] = "OK"
         resp["message"]="Successful"
     return jsonify(resp)
