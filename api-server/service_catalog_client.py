@@ -64,7 +64,7 @@ def main():
     etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
     print ServiceCatalogClient("bora-catalog", etcd_client).create_instance("mysql","4f6e6cf6-ffdd-425f-a2c7-3c9258ad2464")
 
-main()
+#main()
 
         
 

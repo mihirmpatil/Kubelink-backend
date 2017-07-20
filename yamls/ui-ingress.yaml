@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kubelink-ingress
+  namespace: kubelink
+spec:
+  rules:
+  - host: ui.kubelink.borathon.photon-infra.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubelink-ui
+          servicePort: 80
