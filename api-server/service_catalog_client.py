@@ -56,6 +56,8 @@ class ServiceCatalogClient(object):
         k8s_config = output["config"]
         curr_counter = self.get_and_update_counter()
         k8s_config["metadata"]["name"] = k8s_config["metadata"]["name"] + "-" + str(curr_counter)
+        k8s_config["spec"]["parametes"]["instance"] = k8s_config["metadata"]["name"]
+        k8s_config["spec"]["parametes"]["instanceLabel"] = k8s_config["metadata"]["name"]
         self.execute_with_stdin(json.dumps(k8s_config))
         return k8s_config["metadata"]["name"]
 
@@ -64,7 +66,7 @@ def main():
     etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
     print ServiceCatalogClient("bora-catalog", etcd_client).create_instance("mysql","4f6e6cf6-ffdd-425f-a2c7-3c9258ad2464")
 
-main()
+#main()
 
         
 

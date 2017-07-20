@@ -1,0 +1,16 @@
+{
+    "bootstrap" : [
+        {
+        "name" : "Blog Platform",
+        "types" : ["database", "cms"],
+        "id" : "1",
+        "photo": "/img/kubernetes/bundle-blog"
+        },
+        {
+            "name" : "Continuous Development",
+            "types" : ["code-repo","continuous-integration","artifactory","continuous-deployment"],
+            "id" : "2",
+            "photo" : "/img/kubernetes/bundle-cicd"
+        }
+     ]
+}

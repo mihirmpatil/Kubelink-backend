@@ -27,12 +27,21 @@ for item in output["items"]:
     key = standalone_prefix + service_type + "/" + service_id
     d = {"name" : service_name}
     d["type"] = service_type
+    d["id"] = service_id
     d["photo"] = photo_prefix + service_name.lower().replace(" ", "")
     config_dict = yaml_dict
     config_dict["metadata"]["name"] = service_name
     config_dict["spec"]["serviceClassName"] = service_name
+    config_dict["spec"]["parameters"]["instance"] = service_name
+    config_dict["spec"]["parameters"]["instanceLabel"] = service_name 
     d["config"] = config_dict
     #etcd_client.delete(key)
     etcd_client.write(key, json.dumps(d))
 
 etcd_client.write("/counter", 0)
+
+bundle_prefix = "/bundles/"
+j = json.loads(open("instances/bundles.json").read())
+for x in j["bootstrap"]:
+    key = bundle_prefix + x["id"] 
+    etcd_client.write(key, json.dumps(x))
