@@ -95,7 +95,7 @@ def get_bundle_catalog():
         data["types"] = etcd_info["types"]
         data["name"] = etcd_info["name"]
         data["id"] = etcd_info["id"]
-        data["imageSrc"]= etcd_info["photo"]
+        data["imageSrc"]= "/img/kubernetes/k8s-bundle"
         data["components"] = []
         for typename in data["types"]:
             #TODO: filter standalone services by types
@@ -121,6 +121,22 @@ def get_standalone_services(typename):
 
     return l
 
+@app.route("/catalog/bundles/<int:id>")
+def get_bundle(id):
+    top_level_key = "/bundles/"+str(id)
+    bundle = etcd_client.read(top_level_key)
+    etcd_info = json.loads(bundle.value)
+    data = {}
+    data["types"] = etcd_info["types"]
+    data["name"] = etcd_info["name"]
+    data["id"] = etcd_info["id"]
+    data["imageSrc"]= etcd_info["photo"]
+    data["components"] = []
+    for typename in data["types"]:
+        data["components"].append({})
+        data["components"][-1][typename] = get_standalone_services(typename) 
+    return get_success_response(data)
+    
 
 
 app.run(host="0.0.0.0",port=80,debug=True)
