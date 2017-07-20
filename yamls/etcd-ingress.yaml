@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: etcd-ingress
+spec:
+  rules:
+  - host: etcd.kubelink.borathon.photon-infra.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: etcd-client
+          servicePort: 2379

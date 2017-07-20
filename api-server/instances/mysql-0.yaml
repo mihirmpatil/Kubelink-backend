@@ -1,0 +1,8 @@
+apiVersion: servicecatalog.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: mysql--0
+  namespace: standalone
+spec:
+  serviceClassName: mysql
+  planName: default

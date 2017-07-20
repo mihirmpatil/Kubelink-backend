@@ -5,7 +5,7 @@ metadata:
   namespace: kubelink
 spec:
   rules:
-  - host: orchestrator.kubelink.borathon.photon-infra.com
+  - host: orch.kubelink.borathon.photon-infra.com
     http:
       paths:
       - path: /

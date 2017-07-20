@@ -2,7 +2,7 @@ FROM python:2.7.13-alpine3.6
 
 WORKDIR /usr/src/app
 
-EXPOSE 5000
+EXPOSE 80
 
 RUN apk update && apk add bash
 RUN pip install flask flask-cors 
