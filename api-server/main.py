@@ -48,12 +48,15 @@ def running_instances():
 
 @app.route("/catalog/standalone", methods=["POST"])
 def create_instance():
-    servicename = request.args.get("name","")
-    service_id = request.args.get("id","")
+    #servicename = request.form["name"]
+    #service_id = request.form["id"]
+    servicename = request.get_json()["name"]
+    service_id = request.get_json()["id"]
     resp = {}
-    if servicename == "" :
+    print "Create instance flask: ", servicename, service_id
+    if service_id == "" :
         resp["status"] = "ERROR"
-        resp["message"]="Invalid Service Name."
+        resp["message"]="Invalid Service ID."
     else:
         servicename = servicename.lower().replace(" ","")
         instance_id = client.create_instance(servicename, service_id)
@@ -139,7 +142,7 @@ def get_bundle(id):
     
 
 
-app.run(host="0.0.0.0",port=80,debug=True)
+app.run(host="0.0.0.0",port=5000,debug=True)
 
 
 
