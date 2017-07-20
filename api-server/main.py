@@ -39,8 +39,17 @@ def create_instance():
         resp["status"] = "ERROR"
         resp["message"]="Invalid Service Name."
     else:
-        client.create_instance(servicename.lower().replace(" ",""), service_id)
+        servicename = servicename.lower().replace(" ","")
+        client.create_instance(servicename, service_id)
         # TODO insert into etcd here
+        key_prefix = "/instances/standalone/"
+        instance_id = "instance-" + client.get_and_update_counter()
+        key = key_prefix + instance_id
+        d = {"name" : servicename}
+        d["id"] = instance_id
+        d["status"] = "Creating"
+        etcd_client.write(key, json.dumps(d))
+
         resp["status"] = "OK"
         resp["message"]="Successful"
     return jsonify(resp)
