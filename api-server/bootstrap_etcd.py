@@ -3,14 +3,9 @@ import yaml
 import etcd
 import os
 from service_catalog_client import ServiceCatalogClient
+from constants import service_types
 
 etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
-
-service_types = {"mysql" : "database",
-        "mariadb" : "database",
-        "wordpress" : "cms",
-        "drupal" : "cms"
-        }
 
 yaml_template_file = "../etcd/service-instance-template.yaml"
 with open(yaml_template_file, 'r') as stream:
@@ -22,8 +17,7 @@ with open(yaml_template_file, 'r') as stream:
 standalone_prefix = "/standalone/"
 photo_prefix = "img/kubernetes/"
 
-
-catalog_client = ServiceCatalogClient("bora-catalog")
+catalog_client = ServiceCatalogClient("bora-catalog", etcd_client)
 output = catalog_client.get_catalog()
 
 for item in output["items"]:
@@ -37,7 +31,8 @@ for item in output["items"]:
     config_dict = yaml_dict
     config_dict["metadata"]["name"] = service_name
     config_dict["spec"]["serviceClassName"] = service_name
-    d["config"] = json.dumps(config_dict)
-    etcd_client.write(key, d)
+    d["config"] = config_dict
+    #etcd_client.delete(key)
+    etcd_client.write(key, json.dumps(d))
 
 etcd_client.write("/counter", 0)

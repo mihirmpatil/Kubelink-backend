@@ -2,9 +2,13 @@ from flask import Flask, request, jsonify
 from service_catalog_client import ServiceCatalogClient
 from flask_cors import CORS, cross_origin
 import json
+import etcd
 
 app = Flask(__name__)
 CORS(app)
+etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
+client = ServiceCatalogClient("bora-catalog", etcd_client)
+
 
 @app.route("/")
 def main():
@@ -12,7 +16,6 @@ def main():
 
 @app.route("/catalog/standalone", methods=["GET"])
 def get_catalog():
-    client = ServiceCatalogClient("bora-catalog")
     output = client.get_catalog()
     classes = output["items"]
     classesOp = []
@@ -29,14 +32,15 @@ def get_catalog():
 
 @app.route("/catalog/standalone", methods=["POST"])
 def create_instance():
-    client = ServiceCatalogClient("bora-catalog",400)
     servicename = request.args.get("name","")
+    service_id = request.args.get("id","")
     resp = {}
     if servicename == "" :
         resp["status"] = "ERROR"
         resp["message"]="Invalid Service Name."
     else:
-        client.create_instance(servicename.lower().replace(" ",""))
+        client.create_instance(servicename.lower().replace(" ",""), service_id)
+        # TODO insert into etcd here
         resp["status"] = "OK"
         resp["message"]="Successful"
     return jsonify(resp)
