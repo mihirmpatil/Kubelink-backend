@@ -66,8 +66,9 @@ def create_instance():
         d = {"name" : servicename}
         d["id"] = instance_id
         d["status"] = "Creating"
-        d["accessURL"] = ""
-        d["credentials"] = ""
+        d["access_url"] = ""
+        d["credential"] = ""
+        d["bundle"] = ""
         etcd_client.write(key, json.dumps(d))
         resp["status"] = "OK"
         resp["message"]="Successful"
