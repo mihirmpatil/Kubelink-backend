@@ -47,6 +47,23 @@ class ServiceCatalogClient(object):
         command = "kubectl get serviceclasses"
         return self.execute(command, True)
 
+    def get_pod(self, label):
+        command = "kubectl get pods -l instance=" + label + " -o json"
+        json_text = subprocess.check_output(command, shell=True)
+        json_dict = json.loads(json_text)
+        statuses = json_dict["items"][0]["status"]["containerStatuses"]
+        final_status = "Running"
+        for item in statuses:
+            if "running" not in item["state"].keys():
+                final_status = "Pending"
+
+        # update in etcd also
+        output = self.etcd_client.read("/instances/standalone/"+label).value
+        output = json.loads(output)
+        output["status"] = final_status
+        self.etcd_client.write("/instances/standalone/"+label, json.dumps(output))
+        return final_status
+
     def create_instance(self, service_class_name, service_id):
         key = "/standalone/" + service_types[service_class_name] + "/" + service_id
         output = self.etcd_client.read(key).value
@@ -64,7 +81,8 @@ class ServiceCatalogClient(object):
 
 def main():
     etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
-    print ServiceCatalogClient("bora-catalog", etcd_client).create_instance("mysql","4f6e6cf6-ffdd-425f-a2c7-3c9258ad2464")
+    #print ServiceCatalogClient("bora-catalog", etcd_client).create_instance("mysql","4f6e6cf6-ffdd-425f-a2c7-3c9258ad2464")
+    print ServiceCatalogClient("bora-catalog", etcd_client).get_pod("mysql-2")
 
 #main()
 

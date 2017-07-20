@@ -35,7 +35,7 @@ def running_instances():
     #TODO get latest info using kubectl
     key = "/instances/standalone"
     #TODO get bundles also from etcd
-    output = etcd.read(key, recursive=True)
+    output = etcd_client.read(key, recursive=True)
     instances = []
     for item in output.children:
         instances.append({item.key : item.value})
