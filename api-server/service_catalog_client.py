@@ -57,7 +57,7 @@ class ServiceCatalogClient(object):
         curr_counter = self.get_and_update_counter()
         k8s_config["metadata"]["name"] = k8s_config["metadata"]["name"] + "-" + str(curr_counter)
         self.execute_with_stdin(json.dumps(k8s_config))
-        return True
+        return k8s_config["metadata"]["name"]
 
 
 def main():

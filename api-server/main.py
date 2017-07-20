@@ -40,14 +40,15 @@ def create_instance():
         resp["message"]="Invalid Service Name."
     else:
         servicename = servicename.lower().replace(" ","")
-        client.create_instance(servicename, service_id)
+        instance_id = client.create_instance(servicename, service_id)
         # TODO insert into etcd here
         key_prefix = "/instances/standalone/"
-        instance_id = "instance-" + client.get_and_update_counter()
         key = key_prefix + instance_id
         d = {"name" : servicename}
         d["id"] = instance_id
         d["status"] = "Creating"
+        d["accessURL"] = ""
+        d["credentials"] = ""
         etcd_client.write(key, json.dumps(d))
 
         resp["status"] = "OK"
