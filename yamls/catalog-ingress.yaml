@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: catalog-ingress
+  namespace: catalog
+spec:
+  rules:
+  - host: catalog.kubelink.borathon.photon-infra.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: catalog-catalog-apiserver
+          servicePort: 80
