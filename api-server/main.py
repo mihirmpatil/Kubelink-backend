@@ -30,6 +30,22 @@ def get_catalog():
     resp["data"] = classesOp
     return jsonify(resp)
 
+@app.route("/runninginstances", methods=["GET"])
+def running_instances():
+    #TODO get latest info using kubectl
+    key = "/instances/standalone"
+    #TODO get bundles also from etcd
+    output = etcd.read(key, recursive=True)
+    instances = []
+    for item in output.children:
+        instances.append({item.key : item.value})
+
+    resp = {}
+    resp["status"] = "OK"
+    resp["data"] = instances
+    return jsonify(resp)
+
+
 @app.route("/catalog/standalone", methods=["POST"])
 def create_instance():
     servicename = request.args.get("name","")
