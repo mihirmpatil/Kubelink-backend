@@ -38,7 +38,12 @@ def running_instances():
     output = etcd_client.read(key, recursive=True)
     instances = []
     for item in output.children:
-        instances.append({item.key : item.value})
+        instance_id = item.key.split('/')[-1]
+        print "instance id ", instance_id
+        final_status = client.get_pod(instance_id)
+        item.value["status"] = final_status
+        print item.value
+        instances.append(item.value)
 
     resp = {}
     resp["status"] = "OK"
