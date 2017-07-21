@@ -42,16 +42,15 @@ def running_instances():
         if len(temp) < 4:
             continue
         instance_id = temp[-1]
-        print "instance id ", instance_id
         final_status = client.get_pod(instance_id)
         d = json.loads(item.value)
         d["status"] = final_status
-        print "mihir" + json.dumps(d) 
-        instances.append(json.dumps(d))
+        instances.append(d)
 
     resp = {}
     resp["status"] = "OK"
-    resp["data"] = instances
+    print json.dumps(instances)
+    resp["data"] = json.dumps(instances)
     return jsonify(resp)
 
 
