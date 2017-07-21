@@ -152,6 +152,7 @@ def get_bundle(id):
 @app.route("/catalog/bundles",methods=["POST"])
 def create_bundle():
     input = request.get_json()
+    print input
     bundle_id = input["id"]
     bundle_info = json.loads(etcd_client.read("/bundles/"+str(bundle_id)).value)
     print bundle_info
@@ -195,7 +196,7 @@ def create_bundle():
 
 
 
-app.run(host="0.0.0.0",port=80,debug=True)
+app.run(host="0.0.0.0",port=5000,debug=True)
 
 
 

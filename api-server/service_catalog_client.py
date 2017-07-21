@@ -51,9 +51,13 @@ class ServiceCatalogClient(object):
         command = "kubectl --context borathon-context get pods -l instance=" + label + " -o json"
         json_text = subprocess.check_output(command, shell=True)
         json_dict = json.loads(json_text)
-        print json_dict
+        phase = ""
         try:
-            phase = json_dict["status"]["phase"]
+            print json_dict.keys()
+            if len(json_dict["items"]) > 0:
+                phase = json_dict["items"][0]["status"]["phase"]
+            else:
+                return "Pending"
         except KeyError:
             return "Pending"
         if phase == "Terminated":    # no pod exists
