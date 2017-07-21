@@ -67,7 +67,7 @@ class ServiceCatalogClient(object):
         self.etcd_client.write("/instances/standalone/"+label, json.dumps(output))
         return final_status
 
-    def create_instance(self, service_class_name, service_id):
+    def create_instance(self, service_class_name, service_id, secret_name=""):
         key = "/standalone/" + service_types[service_class_name] + "/" + service_id
         output = self.etcd_client.read(key).value
         print type(output)
@@ -78,9 +78,22 @@ class ServiceCatalogClient(object):
         k8s_config["metadata"]["name"] = k8s_config["metadata"]["name"] + "-" + str(curr_counter)
         k8s_config["spec"]["parameters"]["instance"] = k8s_config["metadata"]["name"]
         k8s_config["spec"]["parameters"]["instanceLabel"] = k8s_config["metadata"]["name"]
+        if secret_name != "" :
+            k8s_config["spec"]["parameters"]["dbSecret"] = secret_name
         self.execute_with_stdin(json.dumps(k8s_config))
         return k8s_config["metadata"]["name"]
 
+    def create_binding(self, secret_name, instance_name):
+        base_yaml = open("instances/binding.yaml").read()
+        d = yaml.load(base_yaml)
+        binding_name = instance_name + "-binding-" + self.get_and_update_counter()
+        d["spec"]["instanceRef"]["name"] = instance_name
+        d["spec"]["parameters"]["instance"]= binding_name
+        d["spec"]["parameters"]["instanceLabel"] = binding_name
+        d["metadata"]["name"] = binding_name
+        d["spec"]["secretName"] = secret_name
+        self.execute_with_stdin(json.dumps(d))
+        return binding_name
 
 def main():
     etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)

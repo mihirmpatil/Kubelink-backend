@@ -1,0 +1,13 @@
+ apiVersion: servicecatalog.k8s.io/v1alpha1
+ kind: Binding
+ metadata:
+   name: mariadb-binding
+   namespace: default
+ spec:
+   instanceRef:
+     name: mariadb-test-11
+   secretName: dbsecret
+   parameters:
+     instance: mariadb-binding
+     namespace: default
+     instanceLabel: mariadb-binding

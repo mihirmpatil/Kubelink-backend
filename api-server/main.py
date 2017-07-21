@@ -149,6 +149,48 @@ def get_bundle(id):
         data["components"][-1][typename] = get_standalone_services(typename) 
     return get_success_response(data)
     
+@app.route("/catalog/bundles",methods=["POST"])
+def create_bundle():
+    input = request.get_json()
+    bundle_id = input["id"]
+    bundle_info = etcd_client.read("/bundles/"+str(bundle_id)).value
+    bundle_name = bundle_info["name"]+"-"+str(client.get_and_update_counter())
+    secret_name = bundle_info["name"]+"-secret-"+str(client.get_and_update_counter())
+
+    typename = bundle_info["types"][0]
+    type_instance_id = input[typename]["id"]
+    type_instance_name = input[typename]["name"].lower().replace(" ","")
+    instance_id = client.create_instance(type_instance_name,type_instance_id)
+    # TODO insert into etcd here
+    key_prefix = "/instances/standalone/"
+    key = key_prefix + instance_id
+    d = {"name" : type_instance_name}
+    d["id"] = instance_id
+    d["status"] = "Creating"
+    d["access_url"] = ""
+    d["credential"] = ""
+    d["bundle"] = bundle_name
+    etcd_client.write(key, json.dumps(d))
+    binding_id = client.create_binding(secret_name, instance_id)
+
+    typename = bundle_info["types"][1]
+    type_instance_id = input[typename]["id"]
+    type_instance_name = input[typename]["name"].lower().replace(" ","")
+    instance_id = client.create_instance(type_instance_name,type_instance_id,secret_name)
+    # TODO insert into etcd here
+    key_prefix = "/instances/standalone/"
+    key = key_prefix + instance_id
+    d = {"name" : type_instance_name}
+    d["id"] = instance_id
+    d["status"] = "Creating"
+    d["access_url"] = ""
+    d["credential"] = ""
+    d["bundle"] = bundle_name
+    etcd_client.write(key, json.dumps(d))
+    return get_success_response({})
+
+        
+
 
 
 app.run(host="0.0.0.0",port=5000,debug=True)
