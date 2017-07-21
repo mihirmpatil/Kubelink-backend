@@ -51,6 +51,9 @@ class ServiceCatalogClient(object):
         command = "kubectl get pods -l instance=" + label + " -o json"
         json_text = subprocess.check_output(command, shell=True)
         json_dict = json.loads(json_text)
+        if len(json_dict["items"]) == 0:    # no pod exists
+            self.etcd_client.delete("/instances/standalone/"+label)
+            return "Terminated"
         statuses = json_dict["items"][0]["status"]["containerStatuses"]
         final_status = "Running"
         for item in statuses:
