@@ -48,7 +48,7 @@ class ServiceCatalogClient(object):
         return self.execute(command, True)
 
     def get_pod(self, label):
-        command = "kubectl get pods -l instance=" + label + " -o json"
+        command = "kubectl --context borathon-context get pods -l instance=" + label + " -o json"
         json_text = subprocess.check_output(command, shell=True)
         json_dict = json.loads(json_text)
         if len(json_dict["items"]) == 0:    # no pod exists
