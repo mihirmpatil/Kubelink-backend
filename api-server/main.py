@@ -50,7 +50,7 @@ def running_instances():
     resp = {}
     resp["status"] = "OK"
     print json.dumps(instances)
-    resp["data"] = json.dumps(instances)
+    resp["data"] = instances
     return jsonify(resp)
 
 
@@ -153,8 +153,10 @@ def get_bundle(id):
 def create_bundle():
     input = request.get_json()
     bundle_id = input["id"]
-    bundle_info = etcd_client.read("/bundles/"+str(bundle_id)).value
-    bundle_name = bundle_info["name"]+"-"+str(client.get_and_update_counter())
+    bundle_info = json.loads(etcd_client.read("/bundles/"+str(bundle_id)).value)
+    print bundle_info
+    bundle_info["name"]=bundle_info["name"].lower().replace(" ","")
+    bundle_name = bundle_info["name"].lower().replace(" ","")+"-"+str(client.get_and_update_counter())
     secret_name = bundle_info["name"]+"-secret-"+str(client.get_and_update_counter())
 
     typename = bundle_info["types"][0]
@@ -183,7 +185,7 @@ def create_bundle():
     d = {"name" : type_instance_name}
     d["id"] = instance_id
     d["status"] = "Creating"
-    d["access_url"] = ""
+    d["access_url"] = "http://"+type_instance_name+".kubelink.borathon.photon-infra.com"
     d["credential"] = ""
     d["bundle"] = bundle_name
     etcd_client.write(key, json.dumps(d))
@@ -193,7 +195,7 @@ def create_bundle():
 
 
 
-app.run(host="0.0.0.0",port=5000,debug=True)
+app.run(host="0.0.0.0",port=80,debug=True)
 
 
 

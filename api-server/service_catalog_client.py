@@ -51,14 +51,15 @@ class ServiceCatalogClient(object):
         command = "kubectl --context borathon-context get pods -l instance=" + label + " -o json"
         json_text = subprocess.check_output(command, shell=True)
         json_dict = json.loads(json_text)
-        if len(json_dict["items"]) == 0:    # no pod exists
+        print json_dict
+        try:
+            phase = json_dict["status"]["phase"]
+        except KeyError:
+            return "Pending"
+        if phase == "Terminated":    # no pod exists
             self.etcd_client.delete("/instances/standalone/"+label)
             return "Terminated"
-        statuses = json_dict["items"][0]["status"]["containerStatuses"]
-        final_status = "Running"
-        for item in statuses:
-            if "running" not in item["state"].keys():
-                final_status = "Pending"
+        final_status = phase
 
         # update in etcd also
         output = self.etcd_client.read("/instances/standalone/"+label).value
