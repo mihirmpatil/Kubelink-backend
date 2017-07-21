@@ -6,7 +6,8 @@ import etcd
 
 app = Flask(__name__)
 CORS(app)
-etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
+#etcd_client = etcd.Client(host='etcd.kubelink.borathon.photon-infra.com', port=80)
+etcd_client = etcd.Client(host='etcd-client.default.svc.cluster.local', port=2379)
 client = ServiceCatalogClient("bora-catalog", etcd_client)
 
 
@@ -196,7 +197,7 @@ def create_bundle():
 
 
 
-app.run(host="0.0.0.0",port=5000,debug=True)
+app.run(host="0.0.0.0",port=80,debug=True)
 
 
 
